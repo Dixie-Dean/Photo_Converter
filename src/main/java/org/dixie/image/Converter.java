@@ -18,10 +18,6 @@ public class Converter implements TextGraphicsConverter {
     private double maxRatio;
     private TextColorSchema schema;
 
-//    public Converter(TextColorSchema schema) {
-//        this.schema = schema;
-//    }
-
     @Override
     public void setMaxWidth(int width) {
         this.maxWidth = width;
@@ -43,10 +39,10 @@ public class Converter implements TextGraphicsConverter {
     }
 
     @Override
-    public String convert(String url) throws IOException, ImageSizeException {
-        BufferedImage image = ImageIO.read(new URL(url));
+    public String convert(String filepath) throws IOException, ImageSizeException {
+        BufferedImage image = ImageIO.read(new File(filepath));
 
-        if (maxRatio != 0 && maxHeight != 0 && maxWidth != 0) {
+        if (maxRatio != 0 || maxHeight != 0 || maxWidth != 0) {
             if (checkAspectRatio(image)) {
                 HashMap<String, Integer> finalSize = determineNewSize(image);
                 Image scaledImg = changeImgSize(finalSize, image);
