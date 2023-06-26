@@ -34,3 +34,4 @@ buildNumber.properties
 *.tar.gz
 *.rar
 /target/
+/pictures/
