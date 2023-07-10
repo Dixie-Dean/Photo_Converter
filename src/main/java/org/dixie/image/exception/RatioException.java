@@ -1,4 +1,4 @@
-package org.dixie.image;
+package org.dixie.image.exception;
 
 public class RatioException extends Exception {
     public RatioException(double ratio, double maxRatio) {

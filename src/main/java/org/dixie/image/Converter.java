@@ -1,12 +1,15 @@
 package org.dixie.image;
 
+import org.dixie.image.exception.RatioException;
+import org.dixie.image.exception.WrongParameterException;
+
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
-import java.io.File;
 import java.io.IOException;
-import java.net.URL;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -51,9 +54,8 @@ public class Converter implements TextGraphicsConverter {
     }
 
     @Override
-    public String convert(String source) throws IOException, RatioException {
-        BufferedImage image = ImageIO.read(new URL(source));
-//        BufferedImage image = ImageIO.read(new File(source));
+    public String convert(String source) throws IOException, RatioException, URISyntaxException {
+        BufferedImage image = ImageIO.read(new URI(source).toURL());
 
         checkAspectRatio(image);
         HashMap<String, Integer> finalSize = determineNewSize(image);

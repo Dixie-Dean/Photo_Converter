@@ -1,4 +1,4 @@
-package org.dixie.image;
+package org.dixie.image.exception;
 
 public class WrongParameterException extends Exception {
     public WrongParameterException() {
