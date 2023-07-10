@@ -1,36 +1,47 @@
 package org.dixie.image;
 
 import javax.imageio.ImageIO;
-import javax.imageio.stream.FileImageInputStream;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
 public class Converter implements TextGraphicsConverter {
-    private int maxWidth;
-    private int maxHeight;
-    private double maxRatio;
+    protected final static int WIDTH_CEILING = 256;
+    protected final static int HEIGHT_CEILING = 256;
+    protected final static double RATIO_CEILING = 3;
+
+    private int maxWidth = WIDTH_CEILING;
+    private int maxHeight = HEIGHT_CEILING;
+    private double maxRatio = RATIO_CEILING;
     private TextColorSchema schema;
 
     @Override
-    public void setMaxWidth(int width) {
+    public void setMaxWidth(int width) throws WrongParameterException {
+        if (width > WIDTH_CEILING) {
+            throw new WrongParameterException();
+        }
         this.maxWidth = width;
     }
 
     @Override
-    public void setMaxHeight(int height) {
+    public void setMaxHeight(int height) throws WrongParameterException {
+        if (height > HEIGHT_CEILING) {
+            throw new WrongParameterException();
+        }
         this.maxHeight = height;
     }
 
     @Override
-    public void setMaxRatio(double maxRatio) {
-        this.maxRatio = maxRatio;
+    public void setMaxRatio(double ratio) throws WrongParameterException {
+        if (ratio > RATIO_CEILING) {
+            throw new WrongParameterException();
+        }
+        this.maxRatio = ratio;
     }
 
     @Override
@@ -39,37 +50,26 @@ public class Converter implements TextGraphicsConverter {
     }
 
     @Override
-    public String convert(String filepath) throws IOException, ImageSizeException {
+    public String convert(String filepath) throws IOException, RatioException {
         BufferedImage image = ImageIO.read(new File(filepath));
 
-        if (maxRatio != 0 || maxHeight != 0 || maxWidth != 0) {
-            if (checkAspectRatio(image)) {
-                HashMap<String, Integer> finalSize = determineNewSize(image);
-                Image scaledImg = changeImgSize(finalSize, image);
-                BufferedImage bwImg = makeImgBW(finalSize, scaledImg);
-                List<List<Character>> pixelsLists = collectPixelsToList(bwImg);
-                return getCharImage(pixelsLists);
-            } else {
-                return null;
-            }
-        } else {
-            HashMap<String, Integer> imageSize = new HashMap<>();
-            imageSize.put("width", image.getWidth());
-            imageSize.put("height", image.getHeight());
-
-            BufferedImage bwImg = makeImgBW(imageSize, image);
-            List<List<Character>> pixelsLists = collectPixelsToList(bwImg);
-            return getCharImage(pixelsLists);
-        }
+        checkAspectRatio(image);
+        HashMap<String, Integer> finalSize = determineNewSize(image);
+        Image scaledImg = changeImgSize(finalSize, image);
+        BufferedImage bwImg = makeImgBW(finalSize, scaledImg);
+        List<List<Character>> pixelsLists = collectPixelsToList(bwImg);
+        return getCharImage(pixelsLists);
     }
 
-    private boolean checkAspectRatio(BufferedImage image) throws ImageSizeException {
-        double imgRatio = (double) image.getWidth() / image.getHeight();
+    private void checkAspectRatio(BufferedImage image) throws RatioException {
+        double imgRatioWidth = (double) image.getWidth() / image.getHeight();
+        if (imgRatioWidth > maxRatio) {
+            throw new RatioException(imgRatioWidth, maxRatio);
+        }
 
-        if (imgRatio < maxRatio) {
-            return true;
-        } else {
-            throw new ImageSizeException(imgRatio, maxRatio);
+        double imgRatioHeight = (double) image.getHeight() / image.getWidth();
+        if (imgRatioHeight > maxRatio) {
+            throw new RatioException(imgRatioHeight, maxRatio);
         }
     }
 

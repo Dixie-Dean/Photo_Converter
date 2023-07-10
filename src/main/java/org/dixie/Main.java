@@ -2,25 +2,22 @@ package org.dixie;
 
 import org.dixie.image.ColourSchemaChar;
 import org.dixie.image.Converter;
-import org.dixie.image.ImageSizeException;
 import org.dixie.image.TextGraphicsConverter;
+import org.dixie.server.GServer;
 
 import java.io.FileOutputStream;
-import java.io.IOException;
 
 public class Main {
-    public static void main(String[] args) throws ImageSizeException, IOException {
+    public static void main(String[] args) throws Exception {
         TextGraphicsConverter converter = new Converter();
         converter.setTextColorSchema(new ColourSchemaChar());
-        converter.setMaxHeight(200);
-        converter.setMaxWidth(350);
-        converter.setMaxRatio(5);
 
-        String imgTxt = converter.convert("pictures/gunter.jpg");
-        System.out.println(imgTxt);
+//        String imgTxt = converter.convert("pictures/eve.jpg");
+//        try (FileOutputStream output = new FileOutputStream("picture_test")) {
+//            output.write(imgTxt.getBytes());
+//        }
 
-        try (FileOutputStream output = new FileOutputStream("picture_test")) {
-            output.write(imgTxt.getBytes());
-        }
+        GServer server = new GServer(converter);
+        server.start();
     }
 }
