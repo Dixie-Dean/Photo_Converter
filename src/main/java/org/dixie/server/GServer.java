@@ -2,6 +2,7 @@ package org.dixie.server;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
+import org.dixie.image.Converter;
 import org.dixie.image.TextGraphicsConverter;
 
 import java.io.BufferedReader;
@@ -14,17 +15,17 @@ import java.nio.file.Path;
 public class GServer {
     public static final int PORT = 8888;
 
-    private HttpServer server;
-    private TextGraphicsConverter converter;
+    private final HttpServer server;
+    private final TextGraphicsConverter converter;
 
     public GServer(TextGraphicsConverter converter) throws Exception {
         if (converter == null) {
-            throw new IllegalArgumentException("Not null is needed");
+            throw new IllegalArgumentException("Converter can't be null");
         }
         this.converter = converter;
-        this.converter.setMaxHeight(256);
-        this.converter.setMaxWidth(256);
-        this.converter.setMaxRatio(4);
+        this.converter.setMaxHeight(Converter.HEIGHT_CEILING);
+        this.converter.setMaxWidth(Converter.WIDTH_CEILING);
+        this.converter.setMaxRatio(Converter.RATIO_CEILING);
 
         server = HttpServer.create(new InetSocketAddress("localhost", PORT), 0);
         server.createContext("/", this::serveHtml);
@@ -38,7 +39,6 @@ public class GServer {
     }
 
     protected void serveHtml(HttpExchange h) throws IOException {
-//        System.out.println("Serving html..");
         var htmlPath = Path.of("assets/index.html");
         var htmlContent = Files.readString(htmlPath);
         var jsPath = Path.of("assets/my.js");
@@ -55,7 +55,6 @@ public class GServer {
         var url = new BufferedReader(new InputStreamReader(h.getRequestBody())).readLine();
         try {
             System.out.println("Converting image: " + url);
-            Files.write(Path.of("assets/img.txt"), converter.convert(url).getBytes());
             var img = converter.convert(url).getBytes();
             System.out.println("...converted!");
             h.sendResponseHeaders(200, img.length);

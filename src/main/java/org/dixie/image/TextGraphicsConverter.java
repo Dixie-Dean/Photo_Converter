@@ -3,7 +3,7 @@ package org.dixie.image;
 import java.io.IOException;
 
 public interface TextGraphicsConverter {
-    String convert(String filepath) throws IOException, RatioException;
+    String convert(String source) throws IOException, RatioException;
 
     void setMaxWidth(int width) throws WrongParameterException;
 

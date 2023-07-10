@@ -11,7 +11,7 @@ async function submit() {
       body: url
     });
     if (!resp.ok) {
-      error("Unable to convert the image")
+      error("Unable to convert the image.")
       return;
     }
     const txtImgRaw = await resp.text();
