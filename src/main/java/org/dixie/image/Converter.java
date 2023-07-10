@@ -4,6 +4,7 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
@@ -11,9 +12,9 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class Converter implements TextGraphicsConverter {
-    public final static int WIDTH_CEILING = 256;
-    public final static int HEIGHT_CEILING = 256;
-    public final static double RATIO_CEILING = 4;
+    public final static int WIDTH_CEILING = 216;
+    public final static int HEIGHT_CEILING = 216;
+    public final static double RATIO_CEILING = 3;
 
     private int maxWidth = WIDTH_CEILING;
     private int maxHeight = HEIGHT_CEILING;
@@ -52,6 +53,7 @@ public class Converter implements TextGraphicsConverter {
     @Override
     public String convert(String source) throws IOException, RatioException {
         BufferedImage image = ImageIO.read(new URL(source));
+//        BufferedImage image = ImageIO.read(new File(source));
 
         checkAspectRatio(image);
         HashMap<String, Integer> finalSize = determineNewSize(image);
